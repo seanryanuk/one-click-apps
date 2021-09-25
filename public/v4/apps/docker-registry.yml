@@ -1,29 +1,32 @@
-{
-  "captainVersion": "4",
-  "documentation": "Based on https://www.digitalocean.com/community/tutorials/how-to-set-up-a-private-docker-registry-on-ubuntu-18-04",
-  "displayName": "Docker Container Registry",
-  "dockerCompose": {
-    "version": "3.3",
-    "services": {
-      "$$cap_appname": {
-        "image": "registry:2",
-        "containerHttpPort": "5000",
-        "restart": "always",
-        "volumes": [
-          "$$cap_appname-data:/data",
-          "$$cap_appname-auth:/auth"
-        ],
-        "environment": {
-          "REGISTRY_AUTH": "htpasswd",
-          "REGISTRY_AUTH_HTPASSWD_REALM": "Registry",
-          "REGISTRY_AUTH_HTPASSWD_PATH": "/auth/registry.password",
-          "REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY": "/data"
-        }
-      }
-    }
-  },
-  "instructions": {
-    "start": "",
-    "stop": ""
-  }
-}
+captainVersion: 4
+services:
+  '$$cap_appname':
+    image: 'registry:$$cap_version'
+    environment:
+      REGISTRY_AUTH: "htpasswd"
+      REGISTRY_AUTH_HTPASSWD_REALM: "Registry"
+      REGISTRY_AUTH_HTPASSWD_PATH: "/auth/registry.password"
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/data"
+    volumes:
+      - '$$cap_appname-data:/data'
+      - '$$cap_appname-auth:/auth'
+    caproverExtra:
+      containerHttpPort: "5000"
+      restart: "always"
+caproverOneClickApp:
+  variables:
+    - id: '$$cap_version'
+      label: Docker Registry Version
+      defaultValue: '2'
+      description: Check out their Docker page for the valid tags https://hub.docker.com/_/registry?tab=tags
+      validRegex: "/^([^\\s^\\/])+$/"
+  instructions:
+    start: |-
+      Docker Registry enables you to host your own Docker Registry for storing built docker images
+      without the need to register / pay for dockerhub hosting!
+    end: |-
+      Docker Registry has been successfully deployed!
+  displayName: Docker Registry
+  isOfficial: true
+  description: A CapRover flavoured implementation of the Docker Registry Image
+  documentation: See https://hub.docker.com/_/registry for more information
